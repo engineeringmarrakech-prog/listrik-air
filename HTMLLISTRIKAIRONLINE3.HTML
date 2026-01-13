@@ -1,0 +1,1143 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meter Pro - Pencatatan Listrik & Air Modern</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Cropper.js CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --electric-color: #f59e0b;
+            --electric-bg: #fffbeb;
+            --water-color: #0ea5e9;
+            --water-bg: #f0f9ff;
+            --bg-body: #f3f4f6;
+            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-body);
+            color: #1f2937;
+            padding-bottom: 3rem;
+        }
+
+        /* Navbar */
+        .navbar {
+            background: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .navbar-brand {
+            font-weight: 800;
+            color: var(--primary) !important;
+            font-size: 1.5rem;
+        }
+
+        /* Cards */
+        .card {
+            border: none;
+            border-radius: 16px;
+            box-shadow: var(--card-shadow);
+            background: white;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            border-bottom: 1px solid #f3f4f6;
+            padding: 1.25rem;
+            font-weight: 700;
+            background: white;
+        }
+
+        /* Tab Customization */
+        .nav-pills .nav-link {
+            border-radius: 12px;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            color: #6b7280;
+            transition: all 0.3s;
+        }
+        .nav-pills .nav-link.active {
+            background-color: var(--primary);
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.4);
+        }
+        .nav-pills .nav-link i { margin-right: 8px; }
+
+        /* Form Elements */
+        .form-label {
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+        
+        .form-control, .form-select {
+            border-radius: 10px;
+            border: 1px solid #e5e7eb;
+            padding: 0.75rem 1rem;
+            background-color: #f9fafb;
+        }
+        
+        .form-control:focus {
+            background-color: white;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+        }
+
+        /* Buttons */
+        .btn {
+            border-radius: 10px;
+            font-weight: 600;
+            padding: 0.6rem 1.25rem;
+            border: none;
+            transition: all 0.2s;
+        }
+
+        .btn-primary { background-color: var(--primary); }
+        .btn-primary:hover { background-color: var(--primary-dark); }
+        
+        .btn-electric { background-color: var(--electric-color); color: white; }
+        .btn-electric:hover { background-color: #d97706; color: white; }
+        
+        .btn-water { background-color: var(--water-color); color: white; }
+        .btn-water:hover { background-color: #0284c7; color: white; }
+
+        /* Tables */
+        .table-responsive {
+            border-radius: 12px;
+        }
+        .table thead th {
+            background-color: #f9fafb;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+            color: #6b7280;
+            border-bottom: 2px solid #e5e7eb;
+            padding: 1rem;
+        }
+        .table td {
+            vertical-align: middle;
+            padding: 1rem;
+            border-bottom: 1px solid #f3f4f6;
+            color: #374151;
+        }
+        
+        /* Badges */
+        .badge-unit {
+            background-color: var(--electric-bg);
+            color: #b45309;
+            padding: 0.35rem 0.75rem;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.8rem;
+            display: inline-flex;
+            align-items: center;
+        }
+        .badge-unit::before {
+            content: '';
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background-color: var(--electric-color);
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        .water-theme .badge-unit {
+            background-color: var(--water-bg);
+            color: #0369a1;
+        }
+        .water-theme .badge-unit::before {
+            background-color: var(--water-color);
+        }
+
+        .badge-diff {
+            font-size: 0.8rem;
+            padding: 0.25rem 0.6rem;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+
+        /* Stats Cards */
+        .stat-card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid #f3f4f6;
+            display: flex;
+            align-items: center;
+            height: 100%;
+        }
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-right: 1rem;
+        }
+        .stat-info h3 { margin: 0; font-size: 1.5rem; font-weight: 800; }
+        .stat-info p { margin: 0; color: #9ca3af; font-size: 0.875rem; font-weight: 500; }
+
+        /* Preview & Crop */
+        .preview-box {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #f8fafc;
+            border: 2px dashed #cbd5e1;
+            border-radius: 10px;
+            text-align: center;
+            position: relative;
+        }
+        .preview-img {
+            max-height: 200px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .crop-container {
+            max-height: 70vh;
+            background-color: #1e293b;
+            overflow: hidden;
+            border-radius: 8px;
+        }
+        
+        .thumbnail-sm {
+            width: 45px;
+            height: 45px;
+            object-fit: cover;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 2px solid #e5e7eb;
+            transition: all 0.2s;
+        }
+        .thumbnail-sm:hover {
+            transform: scale(1.1);
+            border-color: var(--primary);
+        }
+
+        /* Utilities */
+        .empty-state {
+            padding: 3rem;
+            text-align: center;
+            color: #9ca3af;
+        }
+        .empty-state i { font-size: 3rem; margin-bottom: 1rem; display: block; opacity: 0.5; }
+
+        /* Loading Overlay */
+        #loadingOverlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255,255,255,0.9);
+            z-index: 9999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            backdrop-filter: blur(5px);
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .nav-pills .nav-link {
+                padding: 0.6rem;
+                font-size: 0.9rem;
+                flex: 1;
+                text-align: center;
+                justify-content: center;
+            }
+            .stat-card { padding: 1rem; }
+            .stat-icon { width: 40px; height: 40px; font-size: 1.2rem; }
+            .stat-info h3 { font-size: 1.25rem; }
+            .crop-container { max-height: 50vh; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay">
+        <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;"></div>
+        <h5 class="mt-3 fw-bold text-secondary">Memproses...</h5>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1100" id="toastContainer"></div>
+
+    <!-- Navbar -->
+    <nav class="navbar sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-bolt text-warning me-2"></i>Meter<span class="text-dark">Pro</span>
+            </a>
+            <div class="d-flex gap-2">
+                <button class="btn btn-outline-primary btn-sm d-none d-md-block" onclick="manageUnits()">
+                    <i class="fas fa-building me-1"></i> Unit
+                </button>
+                <button class="btn btn-outline-secondary btn-sm" onclick="backupData()">
+                    <i class="fas fa-download"></i>
+                </button>
+                <label for="restoreFile" class="btn btn-outline-success btn-sm mb-0 cursor-pointer" style="cursor: pointer;">
+                    <i class="fas fa-upload"></i>
+                </label>
+                <input type="file" id="restoreFile" class="d-none" accept=".json" onchange="restoreData(this)">
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mt-4">
+        
+        <!-- Dashboard Stats -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-3 col-6">
+                <div class="stat-card">
+                    <div class="stat-icon text-warning bg-warning bg-opacity-10">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="statElectric">0</h3>
+                        <p>Listrik (Rec)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="stat-card">
+                    <div class="stat-icon text-info bg-info bg-opacity-10">
+                        <i class="fas fa-tint"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="statWater">0</h3>
+                        <p>Air (Rec)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="stat-card">
+                    <div class="stat-icon text-primary bg-primary bg-opacity-10">
+                        <i class="fas fa-building"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="statUnits">0</h3>
+                        <p>Total Unit</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="stat-card">
+                    <div class="stat-icon text-danger bg-danger bg-opacity-10">
+                        <i class="fas fa-database"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="statStorage">0%</h3>
+                        <p>Storage</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <ul class="nav nav-pills mb-4" id="pills-tab" role="tablist">
+            <li class="nav-item flex-fill text-center" role="presentation">
+                <button class="nav-link active w-100" id="pills-electric-tab" data-bs-toggle="pill" data-bs-target="#pills-electric" type="button" role="tab">
+                    <i class="fas fa-bolt"></i> Listrik
+                </button>
+            </li>
+            <li class="nav-item flex-fill text-center" role="presentation">
+                <button class="nav-link w-100" id="pills-water-tab" data-bs-toggle="pill" data-bs-target="#pills-water" type="button" role="tab">
+                    <i class="fas fa-tint"></i> Air
+                </button>
+            </li>
+        </ul>
+
+        <!-- Tab Content -->
+        <div class="tab-content" id="pills-tabContent">
+            
+            <!-- LISTRIK SECTION -->
+            <div class="tab-pane fade show active" id="pills-electric" role="tabpanel">
+                <div class="row">
+                    <div class="col-lg-4">
+                        <div class="card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <span><i class="fas fa-edit me-2 text-warning"></i>Input Listrik</span>
+                            </div>
+                            <div class="card-body">
+                                <form id="electricForm" onsubmit="handleFormSubmit(event, 'electric')">
+                                    <input type="hidden" id="electricEditId">
+                                    
+                                    <div class="mb-3">
+                                        <label class="form-label">Nama Unit</label>
+                                        <select class="form-select" id="electricUnit" required onchange="handleUnitChange('electric')">
+                                            <option value="">-- Pilih Unit --</option>
+                                        </select>
+                                        <div class="form-text text-muted small" id="electricLastInfo"></div>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label class="form-label">Tanggal</label>
+                                        <input type="date" class="form-control" id="electricDate" required>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label class="form-label">Meteran (kWh)</label>
+                                        <input type="number" step="0.01" class="form-control" id="electricMeter" placeholder="0.00" required>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label class="form-label">Foto Meter</label>
+                                        <input type="file" class="form-control" id="electricPhoto" accept="image/*" onchange="initCropper(event, 'electric')">
+                                        <div class="preview-box d-none" id="electricPreview">
+                                            <img id="electricPrevImg" class="preview-img mb-2">
+                                            <br>
+                                            <button type="button" class="btn btn-sm btn-danger" onclick="clearPhoto('electric')">
+                                                <i class="fas fa-trash me-1"></i> Hapus
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="d-grid gap-2">
+                                        <button type="submit" class="btn btn-electric">Simpan Data</button>
+                                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="resetForm('electric')">Reset Form</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-8">
+                        <div class="card">
+                            <div class="card-header d-flex justify-content-between align-items-center bg-white">
+                                <span><i class="fas fa-history me-2 text-warning"></i>Riwayat Listrik</span>
+                                <button class="btn btn-sm btn-success" onclick="exportToExcel('electric')">
+                                    <i class="fas fa-file-excel me-1"></i> Export
+                                </button>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table table-hover mb-0" id="electricTable">
+                                        <thead>
+                                            <tr>
+                                                <th>Unit</th>
+                                                <th>Tanggal</th>
+                                                <th>Meter</th>
+                                                <th>Selisih</th>
+                                                <th>Foto</th>
+                                                <th class="text-end">Aksi</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="electricTableBody"></tbody>
+                                    </table>
+                                    <div id="electricEmpty" class="empty-state d-none">
+                                        <i class="fas fa-bolt"></i>
+                                        <p>Belum ada data listrik.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AIR SECTION -->
+            <div class="tab-pane fade" id="pills-water" role="tabpanel">
+                <div class="row">
+                    <div class="col-lg-4">
+                        <div class="card water-theme">
+                            <div class="card-header d-flex justify-content-between align-items-center bg-white">
+                                <span><i class="fas fa-edit me-2 text-info"></i>Input Air</span>
+                            </div>
+                            <div class="card-body">
+                                <form id="waterForm" onsubmit="handleFormSubmit(event, 'water')">
+                                    <input type="hidden" id="waterEditId">
+                                    
+                                    <div class="mb-3">
+                                        <label class="form-label">Nama Unit</label>
+                                        <select class="form-select" id="waterUnit" required onchange="handleUnitChange('water')">
+                                            <option value="">-- Pilih Unit --</option>
+                                        </select>
+                                        <div class="form-text text-muted small" id="waterLastInfo"></div>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label class="form-label">Tanggal</label>
+                                        <input type="date" class="form-control" id="waterDate" required>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label class="form-label">Meteran (m³)</label>
+                                        <input type="number" step="any" class="form-control" id="waterMeter" placeholder="0.000" required>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label class="form-label">Foto Meter</label>
+                                        <input type="file" class="form-control" id="waterPhoto" accept="image/*" onchange="initCropper(event, 'water')">
+                                        <div class="preview-box d-none" id="waterPreview">
+                                            <img id="waterPrevImg" class="preview-img mb-2">
+                                            <br>
+                                            <button type="button" class="btn btn-sm btn-danger" onclick="clearPhoto('water')">
+                                                <i class="fas fa-trash me-1"></i> Hapus
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="d-grid gap-2">
+                                        <button type="submit" class="btn btn-water">Simpan Data</button>
+                                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="resetForm('water')">Reset Form</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-8">
+                        <div class="card water-theme">
+                            <div class="card-header d-flex justify-content-between align-items-center bg-white">
+                                <span><i class="fas fa-history me-2 text-info"></i>Riwayat Air</span>
+                                <button class="btn btn-sm btn-success" onclick="exportToExcel('water')">
+                                    <i class="fas fa-file-excel me-1"></i> Export
+                                </button>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table table-hover mb-0" id="waterTable">
+                                        <thead>
+                                            <tr>
+                                                <th>Unit</th>
+                                                <th>Tanggal</th>
+                                                <th>Meter</th>
+                                                <th>Selisih</th>
+                                                <th>Foto</th>
+                                                <th class="text-end">Aksi</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="waterTableBody"></tbody>
+                                    </table>
+                                    <div id="waterEmpty" class="empty-state d-none">
+                                        <i class="fas fa-tint"></i>
+                                        <p>Belum ada data air.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODALS -->
+
+    <!-- Unit Management Modal -->
+    <div class="modal fade" id="unitModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title fw-bold">Kelola Unit</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form class="d-flex gap-2 mb-3" onsubmit="addUnit(event)">
+                        <input type="text" class="form-control" id="newUnitName" placeholder="Nama Unit (misal: A-101)" required>
+                        <button type="submit" class="btn btn-primary"><i class="fas fa-plus"></i></button>
+                    </form>
+                    <ul class="list-group list-group-flush" id="unitList"></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Crop Modal -->
+    <div class="modal fade" id="cropModal" tabindex="-1" data-bs-backdrop="static">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content border-0">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title">Crop Foto</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" onclick="cancelCrop()"></button>
+                </div>
+                <div class="modal-body p-0 bg-dark d-flex justify-content-center">
+                    <div class="crop-container w-100">
+                        <img id="cropImage" style="max-width: 100%;">
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="cancelCrop()">Batal</button>
+                    <button type="button" class="btn btn-primary" onclick="applyCrop()">
+                        <i class="fas fa-check me-1"></i> Gunakan Foto
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Image Preview Modal -->
+    <div class="modal fade" id="imageModal" tabindex="-1">
+        <div class="modal-dialog modal-xl modal-dialog-centered">
+            <div class="modal-content bg-transparent border-0 shadow-none">
+                <div class="modal-header border-0">
+                    <button type="button" class="btn-close btn-close-white ms-auto" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center p-0">
+                    <img id="fullPreviewImg" class="img-fluid rounded shadow-lg" style="max-height: 85vh;">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
+    <script>
+        /**
+         * APLIKASI METER PRO - LOGIC
+         * Menggunakan LocalStorage untuk persistensi data (Offline-First approach).
+         * Sangat cocok untuk PWA atau deploy di Hosting Static (Vercel/Netlify).
+         */
+
+        const DB_KEY = 'meterApp_v5_online_ready';
+        let appData = {
+            units: [],
+            records: []
+        };
+
+        // Global Variables
+        let cropper;
+        let currentUploadType = null;
+        let tempImageData = null;
+
+        // --- INITIALIZATION ---
+        document.addEventListener('DOMContentLoaded', () => {
+            loadData();
+            setupDateDefaults();
+            renderUnitDropdowns();
+            refreshAllTables();
+            updateStats();
+        });
+
+        // --- DATA MANAGEMENT ---
+        function loadData() {
+            const saved = localStorage.getItem(DB_KEY);
+            if (saved) {
+                try {
+                    appData = JSON.parse(saved);
+                } catch (e) {
+                    console.error("Gagal memuat data", e);
+                }
+            }
+        }
+
+        function saveData() {
+            try {
+                localStorage.setItem(DB_KEY, JSON.stringify(appData));
+                updateStats();
+            } catch (e) {
+                if (e.name === 'QuotaExceededError') {
+                    showToast('Memori Penuh! Hapus data lama.', 'danger');
+                }
+            }
+        }
+
+        function generateId() {
+            return Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
+        }
+
+        // --- UI HELPERS ---
+        function updateStats() {
+            const elec = appData.records.filter(r => r.type === 'electric').length;
+            const water = appData.records.filter(r => r.type === 'water').length;
+            
+            // Animate Numbers
+            animateValue("statElectric", parseInt(document.getElementById("statElectric").innerText), elec, 500);
+            animateValue("statWater", parseInt(document.getElementById("statWater").innerText), water, 500);
+            document.getElementById("statUnits").innerText = appData.units.length;
+
+            // Storage calculation
+            const size = new Blob([JSON.stringify(appData)]).size;
+            const mb = (size / 1024 / 1024).toFixed(2);
+            const pct = Math.min(100, Math.round((size / (5 * 1024 * 1024)) * 100));
+            
+            const el = document.getElementById("statStorage");
+            el.innerText = pct + "%";
+            el.className = pct > 80 ? "text-danger fw-bold" : (pct > 50 ? "text-warning fw-bold" : "text-success fw-bold");
+        }
+
+        function animateValue(id, start, end, duration) {
+            if (start === end) return;
+            let range = end - start;
+            let current = start;
+            let increment = end > start ? 1 : -1;
+            let stepTime = Math.abs(Math.floor(duration / range));
+            let obj = document.getElementById(id);
+            let timer = setInterval(function() {
+                current += increment;
+                obj.innerHTML = current;
+                if (current == end) {
+                    clearInterval(timer);
+                }
+            }, Math.max(stepTime, 10)); // Min 10ms
+        }
+
+        function setupDateDefaults() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('electricDate').value = today;
+            document.getElementById('waterDate').value = today;
+        }
+
+        // --- UNIT MANAGEMENT ---
+        function renderUnitDropdowns() {
+            const selects = ['electricUnit', 'waterUnit'];
+            selects.forEach(id => {
+                const el = document.getElementById(id);
+                const current = el.value;
+                el.innerHTML = '<option value="">-- Pilih Unit --</option>';
+                appData.units.sort().forEach(u => {
+                    el.innerHTML += `<option value="${u}">${u}</option>`;
+                });
+                el.value = current;
+            });
+            renderUnitModalList();
+        }
+
+        function renderUnitModalList() {
+            const list = document.getElementById('unitList');
+            list.innerHTML = '';
+            appData.units.sort().forEach(u => {
+                list.innerHTML += `
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                        <span class="fw-bold">${u}</span>
+                        <button class="btn btn-sm btn-link text-danger" onclick="deleteUnit('${u}')">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </li>
+                `;
+            });
+        }
+
+        function manageUnits() {
+            renderUnitModalList();
+            new bootstrap.Modal(document.getElementById('unitModal')).show();
+        }
+
+        function addUnit(e) {
+            e.preventDefault();
+            const input = document.getElementById('newUnitName');
+            const name = input.value.trim();
+            if (name && !appData.units.includes(name)) {
+                appData.units.push(name);
+                saveData();
+                renderUnitDropdowns();
+                input.value = '';
+                showToast('Unit ditambahkan', 'success');
+            } else if (appData.units.includes(name)) {
+                showToast('Unit sudah ada', 'warning');
+            }
+        }
+
+        function deleteUnit(name) {
+            if (confirm(`Hapus unit "${name}" beserta semua datanya?`)) {
+                appData.units = appData.units.filter(u => u !== name);
+                appData.records = appData.records.filter(r => r.unitName !== name);
+                saveData();
+                renderUnitDropdowns();
+                refreshAllTables();
+                showToast('Unit dihapus', 'info');
+            }
+        }
+
+        // --- RECORD LOGIC ---
+        function handleUnitChange(type) {
+            const unit = document.getElementById(type + 'Unit').value;
+            const info = document.getElementById(type + 'LastInfo');
+            
+            if (!unit) {
+                info.innerText = '';
+                return;
+            }
+
+            const history = appData.records
+                .filter(r => r.type === type && r.unitName === unit)
+                .sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            if (history.length > 0) {
+                const last = history[0];
+                const unitLabel = type === 'electric' ? 'kWh' : 'm³';
+                info.innerHTML = `<span class="badge bg-light text-dark border">Terakhir: ${formatNumber(last.meter)} ${unitLabel} (${formatDateShort(last.date)})</span>`;
+            } else {
+                info.innerText = 'Belum ada riwayat.';
+            }
+        }
+
+        function handleFormSubmit(e, type) {
+            e.preventDefault();
+            
+            const idInput = document.getElementById(type + 'EditId');
+            const unit = document.getElementById(type + 'Unit').value;
+            const date = document.getElementById(type + 'Date').value;
+            const meter = parseFloat(document.getElementById(type + 'Meter').value);
+            
+            // Simple validation
+            if (!idInput.value) {
+                const duplicate = appData.records.find(r => r.type === type && r.unitName === unit && r.date === date);
+                if (duplicate) {
+                    showToast(`Data unit ${unit} tanggal ${formatDateShort(date)} sudah ada!`, 'danger');
+                    return;
+                }
+            }
+
+            const record = {
+                id: idInput.value || generateId(),
+                type,
+                unitName: unit,
+                date,
+                meter,
+                photo: tempImageData || (idInput.value ? getOldPhoto(idInput.value) : null),
+                updatedAt: new Date().toISOString()
+            };
+
+            if (idInput.value) {
+                const idx = appData.records.findIndex(r => r.id === idInput.value);
+                if (idx !== -1) appData.records[idx] = record;
+                showToast('Data diperbarui', 'success');
+            } else {
+                appData.records.push(record);
+                showToast('Data disimpan', 'success');
+            }
+
+            saveData();
+            resetForm(type);
+            refreshAllTables();
+        }
+
+        function getOldPhoto(id) {
+            const rec = appData.records.find(r => r.id === id);
+            return rec ? rec.photo : null;
+        }
+
+        function refreshAllTables() {
+            renderTable('electric');
+            renderTable('water');
+        }
+
+        function renderTable(type) {
+            const data = appData.records.filter(r => r.type === type);
+            const tbody = document.getElementById(type + 'TableBody');
+            const emptyState = document.getElementById(type + 'Empty');
+            const table = document.getElementById(type + 'Table');
+
+            tbody.innerHTML = '';
+            
+            if (data.length === 0) {
+                table.style.display = 'none';
+                emptyState.style.display = 'block';
+                return;
+            }
+            
+            table.style.display = 'table';
+            emptyState.style.display = 'none';
+
+            // Sort: Unit ASC, Date DESC
+            const sorted = [...data].sort((a, b) => {
+                if (a.unitName !== b.unitName) return a.unitName.localeCompare(b.unitName);
+                return new Date(b.date) - new Date(a.date);
+            });
+
+            sorted.forEach(item => {
+                // Calculate Diff
+                const unitHistory = sorted.filter(r => r.unitName === item.unitName);
+                const idx = unitHistory.findIndex(r => r.id === item.id);
+                let diffHtml = '-';
+                
+                if (idx < unitHistory.length - 1) {
+                    const prev = unitHistory[idx + 1];
+                    const diff = item.meter - prev.meter;
+                    const badgeClass = diff > 0 ? 'bg-success-subtle text-success' : (diff < 0 ? 'bg-danger-subtle text-danger' : 'bg-secondary-subtle text-secondary');
+                    diffHtml = `<span class="badge ${badgeClass} border">${diff > 0 ? '+' : ''}${formatNumber(diff)}</span>`;
+                }
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><span class="badge-unit">${item.unitName}</span></td>
+                    <td>${formatDateShort(item.date)}</td>
+                    <td class="fw-bold">${formatNumber(item.meter)}</td>
+                    <td>${diffHtml}</td>
+                    <td>
+                        ${item.photo 
+                            ? `<img src="${item.photo}" class="thumbnail-sm" onclick="showImage('${item.photo}')">` 
+                            : '<span class="text-muted small">-</span>'}
+                    </td>
+                    <td class="text-end">
+                        <div class="btn-group btn-group-sm">
+                            <button class="btn btn-outline-primary" onclick="editRecord('${item.id}', '${type}')" title="Edit"><i class="fas fa-edit"></i></button>
+                            <button class="btn btn-outline-danger" onclick="deleteRecord('${item.id}', '${type}')" title="Hapus"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function editRecord(id, type) {
+            const rec = appData.records.find(r => r.id === id);
+            if (!rec) return;
+
+            document.getElementById(type + 'EditId').value = rec.id;
+            document.getElementById(type + 'Unit').value = rec.unitName;
+            document.getElementById(type + 'Date').value = rec.date;
+            document.getElementById(type + 'Meter').value = rec.meter;
+            handleUnitChange(type);
+
+            if (rec.photo) {
+                tempImageData = rec.photo;
+                document.getElementById(type + 'PrevImg').src = rec.photo;
+                document.getElementById(type + 'Preview').classList.remove('d-none');
+            } else {
+                clearPhoto(type);
+            }
+            
+            // Scroll to form
+            document.getElementById(type + 'Form').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function deleteRecord(id, type) {
+            if (confirm('Hapus data ini?')) {
+                appData.records = appData.records.filter(r => r.id !== id);
+                saveData();
+                refreshAllTables();
+                showToast('Data dihapus', 'info');
+            }
+        }
+
+        // --- IMAGE HANDLING & CROP ---
+        function initCropper(e, type) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (evt) => {
+                currentUploadType = type;
+                const modal = new bootstrap.Modal(document.getElementById('cropModal'));
+                modal.show();
+
+                const img = document.getElementById('cropImage');
+                img.src = evt.target.result;
+
+                if (cropper) cropper.destroy();
+
+                cropper = new Cropper(img, {
+                    aspectRatio: NaN,
+                    viewMode: 1,
+                    dragMode: 'move',
+                    autoCropArea: 0.8,
+                    background: false
+                });
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function applyCrop() {
+            if (!cropper) return;
+            const canvas = cropper.getCroppedCanvas({
+                maxWidth: 800,
+                maxHeight: 800,
+                fillColor: '#fff'
+            });
+
+            canvas.toBlob(blob => {
+                const reader = new FileReader();
+                reader.onload = () => {
+                    tempImageData = reader.result;
+                    document.getElementById(currentUploadType + 'PrevImg').src = tempImageData;
+                    document.getElementById(currentUploadType + 'Preview').classList.remove('d-none');
+                    bootstrap.Modal.getInstance(document.getElementById('cropModal')).hide();
+                    cancelCrop();
+                };
+                reader.readAsDataURL(blob);
+            }, 'image/jpeg', 0.7);
+        }
+
+        function cancelCrop() {
+            if (cropper) {
+                cropper.destroy();
+                cropper = null;
+            }
+            // Reset file input
+            if (currentUploadType) {
+                document.getElementById(currentUploadType + 'Photo').value = '';
+                currentUploadType = null;
+            }
+        }
+
+        function clearPhoto(type) {
+            document.getElementById(type + 'Photo').value = '';
+            document.getElementById(type + 'PrevImg').src = '';
+            document.getElementById(type + 'Preview').classList.add('d-none');
+            tempImageData = null;
+        }
+
+        function showImage(src) {
+            document.getElementById('fullPreviewImg').src = src;
+            new bootstrap.Modal(document.getElementById('imageModal')).show();
+        }
+
+        function resetForm(type) {
+            document.getElementById(type + 'Form').reset();
+            document.getElementById(type + 'EditId').value = '';
+            clearPhoto(type);
+            setupDateDefaults();
+            handleUnitChange(type);
+        }
+
+        // --- EXPORT & IMPORT ---
+        async function exportToExcel(type) {
+            const data = appData.records.filter(r => r.type === type);
+            if (data.length === 0) return showToast('Tidak ada data', 'warning');
+
+            document.getElementById('loadingOverlay').style.display = 'flex';
+
+            try {
+                const wb = new ExcelJS.Workbook();
+                const ws = wb.addWorksheet(type.toUpperCase());
+                
+                // Style Headers
+                ws.columns = [
+                    { header: 'Unit', key: 'unit', width: 20 },
+                    { header: 'Tanggal', key: 'date', width: 15 },
+                    { header: 'Meter', key: 'meter', width: 15 },
+                    { header: 'Selisih', key: 'diff', width: 15 },
+                    { header: 'Foto', key: 'photo', width: 30 }
+                ];
+
+                const sorted = [...data].sort((a, b) => {
+                    if (a.unitName !== b.unitName) return a.unitName.localeCompare(b.unitName);
+                    return new Date(a.date) - new Date(b.date);
+                });
+
+                let prev = null;
+                sorted.forEach((item, idx) => {
+                    let diff = 0;
+                    const unitLabel = type === 'electric' ? 'kWh' : 'm³';
+                    
+                    if (prev && prev.unitName === item.unitName) {
+                        diff = item.meter - prev.meter;
+                    }
+                    
+                    const row = {
+                        unit: item.unitName,
+                        date: item.date,
+                        meter: item.meter,
+                        diff: (idx > 0 && sorted[idx-1].unitName === item.unitName) ? (item.meter - sorted[idx-1].meter) + " " + unitLabel : '-'
+                    };
+
+                    const rowIndex = idx + 2;
+                    ws.addRow(row);
+
+                    if (item.photo) {
+                        const imgId = wb.addImage({
+                            base64: item.photo,
+                            extension: 'jpeg',
+                        });
+                        ws.addImage(imgId, {
+                            tl: { col: 4, row: rowIndex - 1 },
+                            ext: { width: 100, height: 75 }
+                        });
+                        ws.getRow(rowIndex).height = 60;
+                    }
+                    prev = item;
+                });
+
+                const buffer = await wb.xlsx.writeBuffer();
+                const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+                saveAs(blob, `Laporan_${type}_${new Date().toISOString().split('T')[0]}.xlsx`);
+                showToast('Excel berhasil diunduh', 'success');
+
+            } catch (err) {
+                console.error(err);
+                showToast('Gagal membuat Excel', 'danger');
+            } finally {
+                document.getElementById('loadingOverlay').style.display = 'none';
+            }
+        }
+
+        function backupData() {
+            const str = JSON.stringify(appData, null, 2);
+            const blob = new Blob([str], {type: "application/json"});
+            saveAs(blob, `backup_meter_pro_${new Date().toISOString().slice(0,10)}.json`);
+        }
+
+        function restoreData(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = e => {
+                try {
+                    const json = JSON.parse(e.target.result);
+                    if (json.units && json.records) {
+                        if (confirm('Timpa data saat ini dengan backup ini?')) {
+                            appData = json;
+                            saveData();
+                            location.reload();
+                        }
+                    } else {
+                        showToast('Format file salah', 'danger');
+                    }
+                } catch (err) {
+                    showToast('File rusak', 'danger');
+                }
+            };
+            reader.readAsText(file);
+            input.value = '';
+        }
+
+        // --- UTILS ---
+        function formatNumber(num) {
+            return parseFloat(num).toLocaleString('id-ID', { maximumFractionDigits: 4 });
+        }
+
+        function formatDateShort(dateStr) {
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+        }
+
+        function showToast(msg, type = 'primary') {
+            const toastContainer = document.getElementById('toastContainer');
+            const bgClass = type === 'success' ? 'text-bg-success' : 
+                             type === 'danger' ? 'text-bg-danger' : 
+                             type === 'warning' ? 'text-bg-warning' : 'text-bg-primary';
+            
+            const toastEl = document.createElement('div');
+            toastEl.className = `toast align-items-center ${bgClass} border-0 show`;
+            toastEl.setAttribute('role', 'alert');
+            toastEl.innerHTML = `
+                <div class="d-flex">
+                    <div class="toast-body">${msg}</div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                </div>
+            `;
+            toastContainer.appendChild(toastEl);
+            setTimeout(() => toastEl.remove(), 3000);
+        }
+    </script>
+</body>
+</html>
